@@ -44,6 +44,16 @@
 #include "extern_var.h"
 
 static void sim_temperature_get_handler(void *request, void *response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset);
+static int in_decrease_range(int random);
+static int in_increase_range(int random);
+static int min_not_reached();
+static int max_not_reached();
+static void decrease();
+static void increase();
+
+static const int PROB_CHANGE_STATE = 50; // in percent
+static const int MIN_TEMP = -5;
+static const int MAX_TEMP = 10;
 
 RESOURCE(res_sim_temperature,
          "title=SIM-TEMPERATURE",
@@ -56,14 +66,52 @@ static void
 sim_temperature_get_handler(void *request, void *response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset)
 {
   // randomly change the value, with a preference of staying in the same state
-  int prob_change_state = 10; // in percent
   int random = 0;
   random = rand() % 100;
-  if (random < prob_change_state) {
-    // switch state
-    current_temperature = (current_temperature + 1) % 2;
+
+  // increase or decrease luminosity exponentially, but don't exceed bounds
+  if (in_decrease_range(random)) {
+    if (min_not_reached()) {
+      decrease();
+    }
+  } else if (in_increase_range(random)) {
+    if (max_not_reached()) {
+      increase();
+    }
   }
+
   REST.set_header_content_type(response, REST.type.TEXT_PLAIN);
   snprintf((char*)buffer, REST_MAX_CHUNK_SIZE, "%d", current_temperature);
   REST.set_response_payload(response, (int *)buffer, strlen((char *)buffer));
 }
+
+static int
+in_decrease_range(int random) {
+  return random < (PROB_CHANGE_STATE/2);
+}
+
+static int
+in_increase_range(int random) {
+  return random >= 100 - (PROB_CHANGE_STATE/2);
+}
+
+static int
+min_not_reached() {
+  return current_temperature > MIN_TEMP;
+}
+
+static int
+max_not_reached() {
+  return current_temperature < MAX_TEMP;
+}
+
+static void
+decrease() {
+  current_temperature = current_temperature - 1;
+}
+
+static void
+increase() {
+  current_temperature = current_temperature + 1;
+}
+

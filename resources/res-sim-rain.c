@@ -44,6 +44,17 @@
 #include "extern_var.h"
 
 static void sim_rain_get_handler(void *request, void *response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset);
+static int in_decrease_range(int random);
+static int in_increase_range(int random);
+static int min_not_reached();
+static int max_not_reached();
+static void decrease();
+static void increase();
+
+static const int PROB_DECREASE = 30; // in percent
+static const int PROB_INCREASE = 20;
+static const float MIN_RAIN = 0.0;
+static const float MAX_RAIN = 1.0;
 
 RESOURCE(res_sim_rain,
          "title=SIM-RAIN",
@@ -56,14 +67,60 @@ static void
 sim_rain_get_handler(void *request, void *response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset)
 {
   // randomly change the value, with a preference of staying in the same state
-  int prob_change_state = 10; // in percent
   int random = 0;
   random = rand() % 100;
-  if (random < prob_change_state) {
-    // switch state
-    current_rain = (current_rain + 1) % 2;
+
+  // increase or decrease luminosity exponentially, but don't exceed bounds
+  if (in_decrease_range(random)) {
+    if (min_not_reached()) {
+      decrease();
+    }
+  } else if (in_increase_range(random)) {
+    if (max_not_reached()) {
+      increase();
+    }
   }
+
   REST.set_header_content_type(response, REST.type.TEXT_PLAIN);
-  snprintf((char*)buffer, REST_MAX_CHUNK_SIZE, "%d", current_rain);
+  snprintf((char*)buffer, REST_MAX_CHUNK_SIZE, "%f", current_rain);
   REST.set_response_payload(response, (int *)buffer, strlen((char *)buffer));
 }
+
+static int
+in_decrease_range(int random) {
+  return random < PROB_DECREASE;
+}
+
+static int
+in_increase_range(int random) {
+  return random >= 100 - PROB_INCREASE;
+}
+
+static int
+min_not_reached() {
+  return current_rain > MIN_RAIN;
+}
+
+static int
+max_not_reached() {
+  return current_rain < MAX_RAIN;
+}
+
+static void
+decrease() {
+  if (current_rain - 0.1 > MIN_RAIN) {
+    current_rain = current_rain;
+  } else {
+    current_rain = MIN_RAIN;
+  }
+}
+
+static void
+increase() {
+  if (current_rain + 0.1 < MAX_RAIN) {
+    current_rain = current_rain + 0.1;
+  } else {
+    current_rain = MAX_RAIN;
+  }
+}
+

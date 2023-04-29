@@ -48,9 +48,9 @@
 
 #include "resources/extern_var.h"
 int current_accel = 0;
-int current_light = 0;
-int current_temperature = 0;
-int current_rain = 0;
+int current_light = 256;
+int current_temperature = 3;
+float current_rain = 0.0;
 int current_traffic = 0;
 
 #define DEBUG 0

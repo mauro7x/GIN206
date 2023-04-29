@@ -44,6 +44,16 @@
 #include "extern_var.h"
 
 static void sim_light_get_handler(void *request, void *response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset);
+static int in_decrease_range(int random);
+static int in_increase_range(int random);
+static int min_not_reached();
+static int max_not_reached();
+static void decrease();
+static void increase();
+
+static const int PROB_CHANGE_STATE = 50; // in percent
+static const int MIN_LIGHT = 1;
+static const int MAX_LIGHT = 65536;
 
 RESOURCE(res_sim_light,
          "title=SIM-LIGHT",
@@ -56,14 +66,51 @@ static void
 sim_light_get_handler(void *request, void *response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset)
 {
   // randomly change the value, with a preference of staying in the same state
-  int prob_change_state = 10; // in percent
   int random = 0;
   random = rand() % 100;
-  if (random < prob_change_state) {
-    // switch state
-    current_light = (current_light + 1) % 2;
+
+  // increase or decrease luminosity exponentially, but don't exceed bounds
+  if (in_decrease_range(random)) {
+    if (min_not_reached()) {
+      decrease();
+    }
+  } else if (in_increase_range(random)) {
+    if (max_not_reached()) {
+      increase();
+    }
   }
+
   REST.set_header_content_type(response, REST.type.TEXT_PLAIN);
   snprintf((char*)buffer, REST_MAX_CHUNK_SIZE, "%d", current_light);
   REST.set_response_payload(response, (int *)buffer, strlen((char *)buffer));
+}
+
+static int
+in_decrease_range(int random) {
+  return random < (PROB_CHANGE_STATE/2);
+}
+
+static int
+in_increase_range(int random) {
+  return random >= 100 - (PROB_CHANGE_STATE/2);
+}
+
+static int
+min_not_reached() {
+  return current_light > MIN_LIGHT;
+}
+
+static int
+max_not_reached() {
+  return current_light < MAX_LIGHT;
+}
+
+static void
+decrease() {
+  current_light = current_light/2;
+}
+
+static void
+increase() {
+  current_light = current_light*2;
 }
