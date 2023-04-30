@@ -97,5 +97,4 @@ event_loop.create_task(observe_alarm_accel())
 event_loop.create_task(observe_alarm_traffic())
 asyncio.get_event_loop().run_forever()
 
-# # Inicio del bucle de eventos
 # asyncio.run(main())
