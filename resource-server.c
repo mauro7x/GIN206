@@ -47,11 +47,18 @@
 #include "dev/serial-line.h"
 
 #include "resources/extern_var.h"
-int current_accel = 0;
+
+// Sensors data
 int current_light = 256;
 int current_temperature = 3;
 float current_rain = 0.0;
-int current_traffic = 0;
+
+// Alarms
+int accel_alarm_status = 0;
+int freezing_alarm_status = 0;
+int traffic_alarm_status = 0;
+int lights_alarm_status = 0;
+
 
 #define DEBUG 0
 #if DEBUG
@@ -71,11 +78,17 @@ int current_traffic = 0;
  */
 extern resource_t
   res_event,
-  res_sim_accel,
+
+  // Alarms
+  res_alarm_accel,
+  res_alarm_freezing,
+  res_alarm_lights,
+  res_alarm_traffic,
+
+  // Sensors
   res_sim_light,
   res_sim_temperature,
-  res_sim_rain,
-  res_sim_traffic;
+  res_sim_rain;
 
 extern char* res_serial_data;
 PROCESS(er_example_server, "Resource CoAP Server");
@@ -109,11 +122,15 @@ PROCESS_THREAD(er_example_server, ev, data)
    * WARNING: Activating twice only means alternate path, not two instances!
    * All static variables are the same for each URI path.
    */
-  rest_activate_resource(&res_sim_accel, "my_res/sim_accel");
+  // Alarms
+  rest_activate_resource(&res_alarm_accel, "my_res/alarm_accel");
+  rest_activate_resource(&res_alarm_freezing, "my_res/alarm_freezing");
+  rest_activate_resource(&res_alarm_lights, "my_res/alarm_lights");
+  rest_activate_resource(&res_alarm_traffic, "my_res/alarm_traffic");
+  // Sensors
   rest_activate_resource(&res_sim_light, "my_res/sim_light");
   rest_activate_resource(&res_sim_temperature, "my_res/sim_temperature");
   rest_activate_resource(&res_sim_rain, "my_res/sim_rain");
-  rest_activate_resource(&res_sim_traffic, "my_res/sim_traffic");
 
   /* Define application-specific events here. */
   while(1) {

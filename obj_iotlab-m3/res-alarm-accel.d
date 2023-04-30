@@ -1,4 +1,4 @@
-obj_iotlab-m3/res-radio.o: resources/res-radio.c \
+obj_iotlab-m3/res-alarm-accel.o: resources/res-alarm-accel.c \
  ../iot-lab/parts/contiki/core/./contiki.h \
  ../iot-lab/parts/contiki/core/./contiki-version.h \
  ../iot-lab/parts/contiki/platform/iotlab-m3/./contiki-conf.h \
@@ -26,8 +26,17 @@ obj_iotlab-m3/res-radio.o: resources/res-radio.c \
  ../iot-lab/parts/contiki/core/./sys/loader.h \
  ../iot-lab/parts/contiki/core/./sys/clock.h \
  ../iot-lab/parts/contiki/core/./sys/energest.h \
- ../iot-lab/parts/contiki/core/./sys/rtimer.h
-resources/res-radio.c :
+ ../iot-lab/parts/contiki/core/./sys/rtimer.h \
+ ../iot-lab/parts/contiki/apps/rest-engine/rest-engine.h \
+ ../iot-lab/parts/contiki/core/./contiki-lib.h \
+ ../iot-lab/parts/contiki/core/./contiki.h \
+ ../iot-lab/parts/contiki/core/./lib/list.h \
+ ../iot-lab/parts/contiki/core/./lib/memb.h \
+ ../iot-lab/parts/contiki/core/./lib/mmem.h \
+ ../iot-lab/parts/contiki/core/./lib/random.h \
+ ../iot-lab/parts/contiki/apps/rest-engine/rest-constants.h \
+ resources/extern_var.h
+resources/res-alarm-accel.c :
  ../iot-lab/parts/contiki/core/./contiki.h :
  ../iot-lab/parts/contiki/core/./contiki-version.h :
  ../iot-lab/parts/contiki/platform/iotlab-m3/./contiki-conf.h :
@@ -56,3 +65,12 @@ resources/res-radio.c :
  ../iot-lab/parts/contiki/core/./sys/clock.h :
  ../iot-lab/parts/contiki/core/./sys/energest.h :
  ../iot-lab/parts/contiki/core/./sys/rtimer.h :
+ ../iot-lab/parts/contiki/apps/rest-engine/rest-engine.h :
+ ../iot-lab/parts/contiki/core/./contiki-lib.h :
+ ../iot-lab/parts/contiki/core/./contiki.h :
+ ../iot-lab/parts/contiki/core/./lib/list.h :
+ ../iot-lab/parts/contiki/core/./lib/memb.h :
+ ../iot-lab/parts/contiki/core/./lib/mmem.h :
+ ../iot-lab/parts/contiki/core/./lib/random.h :
+ ../iot-lab/parts/contiki/apps/rest-engine/rest-constants.h :
+ resources/extern_var.h :

@@ -1,4 +1,4 @@
-obj_iotlab-m3/res-accel.o: resources/res-accel.c \
+obj_iotlab-m3/res-alarm-traffic.o: resources/res-alarm-traffic.c \
  ../iot-lab/parts/contiki/core/./contiki.h \
  ../iot-lab/parts/contiki/core/./contiki-version.h \
  ../iot-lab/parts/contiki/platform/iotlab-m3/./contiki-conf.h \
@@ -35,11 +35,8 @@ obj_iotlab-m3/res-accel.o: resources/res-accel.c \
  ../iot-lab/parts/contiki/core/./lib/mmem.h \
  ../iot-lab/parts/contiki/core/./lib/random.h \
  ../iot-lab/parts/contiki/apps/rest-engine/rest-constants.h \
- ../iot-lab/parts/contiki/platform/iotlab-m3/../openlab/dev/acc-mag-sensor.h \
- ../iot-lab/parts/contiki/core/./lib/sensors.h \
- ../iot-lab/parts/contiki/platform/iotlab-m3/../../../openlab/periph/lsm303dlhc.h \
- ../iot-lab/parts/contiki/platform/iotlab-m3/../../../openlab/lib/handler.h
-resources/res-accel.c :
+ resources/extern_var.h
+resources/res-alarm-traffic.c :
  ../iot-lab/parts/contiki/core/./contiki.h :
  ../iot-lab/parts/contiki/core/./contiki-version.h :
  ../iot-lab/parts/contiki/platform/iotlab-m3/./contiki-conf.h :
@@ -76,7 +73,4 @@ resources/res-accel.c :
  ../iot-lab/parts/contiki/core/./lib/mmem.h :
  ../iot-lab/parts/contiki/core/./lib/random.h :
  ../iot-lab/parts/contiki/apps/rest-engine/rest-constants.h :
- ../iot-lab/parts/contiki/platform/iotlab-m3/../openlab/dev/acc-mag-sensor.h :
- ../iot-lab/parts/contiki/core/./lib/sensors.h :
- ../iot-lab/parts/contiki/platform/iotlab-m3/../../../openlab/periph/lsm303dlhc.h :
- ../iot-lab/parts/contiki/platform/iotlab-m3/../../../openlab/lib/handler.h :
+ resources/extern_var.h :

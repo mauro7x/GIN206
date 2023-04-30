@@ -1,7 +1,9 @@
 # config
 sensor_server=$SENSOR_SERVER;
-#sensor_server="2001:660:4403:481::b870";
-thingsboard_telemetry="http://mauro.rezel.net:8080/api/v1/MYTOKEN/telemetry"
+device_token="${DEVICE_TOKEN:-MONITOKEN}"
+
+# sensor_server="2001:660:4403:481::b870";
+thingsboard_telemetry="http://mauro.rezel.net:8080/api/v1/$device_token/telemetry"
 light_key="light";
 temperature_key="temperature";
 rain_key="rain";

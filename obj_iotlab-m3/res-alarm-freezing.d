@@ -1,5 +1,4 @@
-obj_iotlab-m3/res-new-alarm.o: resources/res-new-alarm.c \
- ../iot-lab/parts/contiki/apps/rest-engine/rest-engine.h \
+obj_iotlab-m3/res-alarm-freezing.o: resources/res-alarm-freezing.c \
  ../iot-lab/parts/contiki/core/./contiki.h \
  ../iot-lab/parts/contiki/core/./contiki-version.h \
  ../iot-lab/parts/contiki/platform/iotlab-m3/./contiki-conf.h \
@@ -28,6 +27,7 @@ obj_iotlab-m3/res-new-alarm.o: resources/res-new-alarm.c \
  ../iot-lab/parts/contiki/core/./sys/clock.h \
  ../iot-lab/parts/contiki/core/./sys/energest.h \
  ../iot-lab/parts/contiki/core/./sys/rtimer.h \
+ ../iot-lab/parts/contiki/apps/rest-engine/rest-engine.h \
  ../iot-lab/parts/contiki/core/./contiki-lib.h \
  ../iot-lab/parts/contiki/core/./contiki.h \
  ../iot-lab/parts/contiki/core/./lib/list.h \
@@ -36,8 +36,7 @@ obj_iotlab-m3/res-new-alarm.o: resources/res-new-alarm.c \
  ../iot-lab/parts/contiki/core/./lib/random.h \
  ../iot-lab/parts/contiki/apps/rest-engine/rest-constants.h \
  resources/extern_var.h
-resources/res-new-alarm.c :
- ../iot-lab/parts/contiki/apps/rest-engine/rest-engine.h :
+resources/res-alarm-freezing.c :
  ../iot-lab/parts/contiki/core/./contiki.h :
  ../iot-lab/parts/contiki/core/./contiki-version.h :
  ../iot-lab/parts/contiki/platform/iotlab-m3/./contiki-conf.h :
@@ -66,6 +65,7 @@ resources/res-new-alarm.c :
  ../iot-lab/parts/contiki/core/./sys/clock.h :
  ../iot-lab/parts/contiki/core/./sys/energest.h :
  ../iot-lab/parts/contiki/core/./sys/rtimer.h :
+ ../iot-lab/parts/contiki/apps/rest-engine/rest-engine.h :
  ../iot-lab/parts/contiki/core/./contiki-lib.h :
  ../iot-lab/parts/contiki/core/./contiki.h :
  ../iot-lab/parts/contiki/core/./lib/list.h :

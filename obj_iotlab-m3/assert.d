@@ -1,2 +1,2 @@
-obj_iotlab-m3/assert.o: ../../../core/lib/assert.c
-../../../core/lib/assert.c :
+obj_iotlab-m3/assert.o: ../iot-lab/parts/contiki/core/lib/assert.c
+../iot-lab/parts/contiki/core/lib/assert.c :

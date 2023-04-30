@@ -1,2 +1,2 @@
-obj_iotlab-m3/me_tabs.o: ../../../core/lib/me_tabs.c
-../../../core/lib/me_tabs.c :
+obj_iotlab-m3/me_tabs.o: ../iot-lab/parts/contiki/core/lib/me_tabs.c
+../iot-lab/parts/contiki/core/lib/me_tabs.c :
