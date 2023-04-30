@@ -1,0 +1,9 @@
+obj_iotlab-m3/
+.vscode/
+
+*.a
+*.iotlab-m3
+*.o
+*.csc
+
+!old/**/*
