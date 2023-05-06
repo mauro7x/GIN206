@@ -1,14 +1,3 @@
-"""import argparse
-
-parser = argparse.ArgumentParser(
-    prog="forward_monitoring_data.py",
-    description="Parse monitoring data from .oml file and forward to a Thingsboard device"
-)
-
-parser.add_argument()
-
-"""
-
 import subprocess
 import json
 import os
@@ -20,6 +9,8 @@ THINGSBOARD_URL = "http://mauro.rezel.net:8080/api/v1/{}/telemetry".format(THING
 HOME = os.environ.get("HOME")
 MONITORING_DATA_PATH = HOME + "/.iot-lab/{}/{}/{}.oml"  # fill experiment id, type of monitoring, node id
 UPDATE_FREQ = 5  # in seconds
+ENERGY_MSG_RATE = 2  # use every xth datapoint. Forwarding is not fast enough to use all data.
+
 
 def get_experiment_info():
     try:
@@ -119,6 +110,7 @@ def send_to_thingsboard(telemetry_msg):
             telemetry_msg, THINGSBOARD_URL
         ))
 
+
 def main():
     # initial setup
     exp_id, nodes_list = get_experiment_info()
@@ -131,7 +123,7 @@ def main():
         for node, node_data in energy_monitoring_data.items():
             start_idx = last_datapoint_index[node]["consumption"] + 1
             # the final node is usually still incompletely written, so we skip it in this iteration
-            for datapoint in node_data[start_idx:-1]:
+            for datapoint in node_data[start_idx:-1:ENERGY_MSG_RATE]:
                 telemetry_msg = make_energy_telemetry_msg(datapoint, node)
                 send_to_thingsboard(telemetry_msg)
             # save the latest datapoint so it is not resent
