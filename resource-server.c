@@ -48,6 +48,9 @@
 
 #include "resources/extern_var.h"
 
+// Enable / disable optimization
+int use_accel_alarm = 1;
+
 // Sensors data
 int current_light = 256;
 int current_temperature = 3;

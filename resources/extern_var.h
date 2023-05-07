@@ -1,3 +1,6 @@
+// Toggle the acceleration alarm optimization for evaluation purposes
+extern int use_accel_alarm;
+
 // Sensors data
 extern int current_light;
 extern int current_temperature;
