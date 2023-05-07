@@ -8,7 +8,7 @@ logging.basicConfig(level=logging.INFO)
 
 # CONFIG ======================================================================
 
-RESOURCE_SERVER = '2001:660:5307:3144::a476'
+RESOURCE_SERVER = '2001:660:5307:3144::a271'
 DEVICE_TOKEN = "MONITOKEN"
 THINGSBOARD_HEADERS = {'Content-Type': 'application/json'}
 
@@ -106,7 +106,7 @@ alarms = {
 
 @asyncio.coroutine
 def query_sensor(resource):
-    def log(msg): return print(f"[query-sensor-{resource}] {msg}")
+    def log(msg): return logging.debug(f"[query-sensor-{resource}] {msg}")
 
     while True:
         try:
@@ -121,7 +121,7 @@ def query_sensor(resource):
 
             # Sleep
             sleep_time = resources[resource]["freq_if_moving"] if moving else resources[resource]["freq_if_stopped"]
-            log(f"Sleeping {sleep_time} secs before next query...")
+            # log(f"Sleeping {sleep_time} secs before next query...")
             yield from asyncio.sleep(sleep_time)
         except asyncio.CancelledError:
             break
@@ -129,7 +129,7 @@ def query_sensor(resource):
 
 @asyncio.coroutine
 def observe_alarm(alarm):
-    def log(msg): return print(f"[observer-alarm-{alarm}] {msg}")
+    def log(msg): return logging.debug(f"[observer-alarm-{alarm}] {msg}")
 
     protocol = yield from aiocoap.Context.create_client_context()
     request = aiocoap.Message(code=aiocoap.GET)
@@ -170,8 +170,8 @@ if __name__ == "__main__":
         query_sensor("temperature"),
         observe_alarm("accel"),
         observe_alarm("lights"),
-        # observe_alarm("freezing"),
-        # observe_alarm("traffic"),
+        observe_alarm("freezing"),
+        observe_alarm("traffic"),
     ]
 
     # Spawn tasks in the event loop

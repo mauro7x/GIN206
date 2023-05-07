@@ -53,7 +53,7 @@ static void decrease();
 static void increase();
 
 static const int PROB_DECREASE = 50; // in percent
-static const int PROB_INCREASE = 5;
+static const int PROB_INCREASE = 10;
 static const int MIN_ACCEL = 0.0;
 static const int MAX_ACCEL = 2.0;
 
