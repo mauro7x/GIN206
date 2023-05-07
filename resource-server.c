@@ -51,7 +51,9 @@
 // Sensors data
 int current_light = 256;
 int current_temperature = 3;
-float current_rain = 0.0;
+float current_rain = 0.0f;
+float current_traffic = 1.0f;
+float current_accel = 0.0f;
 
 // Alarms
 int accel_alarm_status = 0;
@@ -88,7 +90,9 @@ extern resource_t
   // Sensors
   res_sim_light,
   res_sim_temperature,
-  res_sim_rain;
+  res_sim_rain,
+  res_sim_traffic,
+  res_sim_accel;
 
 extern char* res_serial_data;
 PROCESS(er_example_server, "Resource CoAP Server");
@@ -131,6 +135,8 @@ PROCESS_THREAD(er_example_server, ev, data)
   rest_activate_resource(&res_sim_light, "my_res/sim_light");
   rest_activate_resource(&res_sim_temperature, "my_res/sim_temperature");
   rest_activate_resource(&res_sim_rain, "my_res/sim_rain");
+  rest_activate_resource(&res_sim_traffic, "my_res/sim_traffic");
+  rest_activate_resource(&res_sim_accel, "my_res/sim_accel");
 
   /* Define application-specific events here. */
   while(1) {
