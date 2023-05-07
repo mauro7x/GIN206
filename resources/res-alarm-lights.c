@@ -46,14 +46,16 @@
 #include "rest-engine.h"
 
 #include "extern_var.h"
+#include "res-sim-light.h"
 
 static void res_get_handler(void *request, void *response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset);
 static void res_periodic_handler(void);
+static int lights_alarm_threshold_reached();
 
 #define MAX_AGE                 60
 #define LIGHTS_ALARM_FREQ_SECS  3
 
-static const int LIGHT_THRESHOLD = 10000;
+static const int LIGHT_THRESHOLD = 500;
 
 PERIODIC_RESOURCE(res_alarm_lights,
          "title=ALARM-LIGHTS",
@@ -84,19 +86,29 @@ res_get_handler(void *request, void *response, uint8_t *buffer, uint16_t preferr
 static void
 res_periodic_handler()
 {
-  // Ignore alarm if not moving
-  if (accel_alarm_status == 0) {
+  // Optimization: Ignore alarms if not moving
+  if (use_accel_alarm && (accel_alarm_status == 0)) {
     return;
   }
   
   printf("[res-alarm-lights] res_periodic_handler called (status=%d)\n", lights_alarm_status);
 
-  int new_alarm_status = (current_light < LIGHT_THRESHOLD) ? 1 : 0;
+  // update alarm status
+  int new_alarm_status = lights_alarm_threshold_reached();
   if (new_alarm_status != lights_alarm_status) {
     lights_alarm_status = new_alarm_status;
-  
     printf("[res-alarm-lights] status changed to %d, notifying subscribers\n", lights_alarm_status);
     /* Notify the registered observers which will trigger the res_get_handler to create the response. */
     REST.notify_subscribers(&res_alarm_lights);
   }
+}
+
+static int
+lights_alarm_threshold_reached()
+{
+  // get a fresh sensor value
+  // the extern variable current_light could be used directly if it was updated more frequently, but in this
+  // architecture it is only updated upon external GET
+  int light_sensor_value = get_light_sensor_value();
+  return light_sensor_value <= LIGHT_THRESHOLD;
 }

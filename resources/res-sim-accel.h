@@ -1,0 +1,1 @@
+float get_accel_sensor_value();

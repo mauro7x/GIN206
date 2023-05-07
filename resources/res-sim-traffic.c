@@ -42,9 +42,9 @@
 #include "rest-engine.h"
 
 #include "extern_var.h"
+#include "res-sim-traffic.h"
 
 static void sim_traffic_get_handler(void *request, void *response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset);
-static float get_traffic_sensor_value();
 static int in_decrease_range(int random);
 static int in_increase_range(int random);
 static int min_not_reached();
@@ -52,7 +52,7 @@ static int max_not_reached();
 static void decrease();
 static void increase();
 
-static const int PROB_CHANGE_STATE = 50; // in percent
+static const int PROB_CHANGE_STATE = 80; // in percent
 static const int MIN_TRAFFIC = 1.0;
 static const int MAX_TRAFFIC = 2.0;
 
@@ -73,7 +73,7 @@ sim_traffic_get_handler(void *request, void *response, uint8_t *buffer, uint16_t
 }
 
 
-static float
+float
 get_traffic_sensor_value()
 {
   // randomly change the value, with a preference of staying in the same state

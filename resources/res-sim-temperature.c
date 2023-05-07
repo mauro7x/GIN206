@@ -42,6 +42,7 @@
 #include "rest-engine.h"
 
 #include "extern_var.h"
+#include "res-sim-temperature.h"
 
 static void sim_temperature_get_handler(void *request, void *response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset);
 static int in_decrease_range(int random);
@@ -65,11 +66,20 @@ RESOURCE(res_sim_temperature,
 static void
 sim_temperature_get_handler(void *request, void *response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset)
 {
+  int temperature_sensor_value = get_temperature_sensor_value();
+  REST.set_header_content_type(response, REST.type.TEXT_PLAIN);
+  snprintf((char*)buffer, REST_MAX_CHUNK_SIZE, "%d", temperature_sensor_value);
+  REST.set_response_payload(response, (int *)buffer, strlen((char *)buffer));
+}
+
+int
+get_temperature_sensor_value()
+{
   // randomly change the value, with a preference of staying in the same state
   int random = 0;
   random = rand() % 100;
 
-  // increase or decrease luminosity exponentially, but don't exceed bounds
+  // increase or decrease temperature exponentially, but don't exceed bounds
   if (in_decrease_range(random)) {
     if (min_not_reached()) {
       decrease();
@@ -79,10 +89,7 @@ sim_temperature_get_handler(void *request, void *response, uint8_t *buffer, uint
       increase();
     }
   }
-
-  REST.set_header_content_type(response, REST.type.TEXT_PLAIN);
-  snprintf((char*)buffer, REST_MAX_CHUNK_SIZE, "%d", current_temperature);
-  REST.set_response_payload(response, (int *)buffer, strlen((char *)buffer));
+  return current_temperature;
 }
 
 static int

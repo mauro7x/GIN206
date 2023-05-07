@@ -48,11 +48,14 @@
 
 #include "resources/extern_var.h"
 
+// Enable / disable optimization
+int use_accel_alarm = 1;
+
 // Sensors data
 int current_light = 256;
 int current_temperature = 3;
 float current_rain = 0.0f;
-float current_traffic = 1.0f;
+float current_traffic = 1.4f;
 float current_accel = 0.0f;
 
 // Alarms
