@@ -46,14 +46,16 @@
 #include "rest-engine.h"
 
 #include "extern_var.h"
+#include "res-sim-temperature.h"
 
 static void res_get_handler(void *request, void *response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset);
 static void res_periodic_handler(void);
+static int freezing_alarm_threshold_reached();
 
 #define MAX_AGE                   60
 #define FREEZING_ALARM_FREQ_SECS  60
 
-static const int TEMP_THRESHOLD = 0;
+static const int TEMP_THRESHOLD = 2;
 
 PERIODIC_RESOURCE(res_alarm_freezing,
          "title=ALARM-FREEZING",
@@ -91,7 +93,8 @@ res_periodic_handler()
   
   printf("[res-alarm-freezing] res_periodic_handler called (status=%d)\n", freezing_alarm_status);
 
-  int new_alarm_status = (current_temperature < TEMP_THRESHOLD) ? 1 : 0;
+  // update alarm status
+  int new_alarm_status = freezing_alarm_threshold_reached();
   if (new_alarm_status != freezing_alarm_status) {
     freezing_alarm_status = new_alarm_status;
   
@@ -99,4 +102,14 @@ res_periodic_handler()
     /* Notify the registered observers which will trigger the res_get_handler to create the response. */
     REST.notify_subscribers(&res_alarm_freezing);
   }
+}
+
+static int
+freezing_alarm_threshold_reached()
+{
+  // get a fresh sensor value
+  // the extern variable current_temperature could be used directly if it was updated more frequently, but in this
+  // architecture it is only updated upon external GET
+  int freezing_sensor_value = get_temperature_sensor_value();
+  return freezing_sensor_value <= TEMP_THRESHOLD;
 }

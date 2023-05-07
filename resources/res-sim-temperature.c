@@ -42,9 +42,9 @@
 #include "rest-engine.h"
 
 #include "extern_var.h"
+#include "res-sim-temperature.h"
 
 static void sim_temperature_get_handler(void *request, void *response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset);
-int get_temperature_sensor_value();
 static int in_decrease_range(int random);
 static int in_increase_range(int random);
 static int min_not_reached();
