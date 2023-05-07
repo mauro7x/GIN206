@@ -44,6 +44,7 @@
 #include "extern_var.h"
 
 static void sim_rain_get_handler(void *request, void *response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset);
+float get_rain_sensor_value();
 static int in_decrease_range(int random);
 static int in_increase_range(int random);
 static int min_not_reached();
@@ -66,11 +67,20 @@ RESOURCE(res_sim_rain,
 static void
 sim_rain_get_handler(void *request, void *response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset)
 {
+  float rain_sensor_value = get_rain_sensor_value();
+  REST.set_header_content_type(response, REST.type.TEXT_PLAIN);
+  snprintf((char*)buffer, REST_MAX_CHUNK_SIZE, "%f", rain_sensor_value);
+  REST.set_response_payload(response, (int *)buffer, strlen((char *)buffer));
+}
+
+float
+get_rain_sensor_value()
+{
   // randomly change the value, with a preference of staying in the same state
   int random = 0;
   random = rand() % 100;
 
-  // increase or decrease luminosity exponentially, but don't exceed bounds
+  // increase or decrease rain exponentially, but don't exceed bounds
   if (in_decrease_range(random)) {
     if (min_not_reached()) {
       decrease();
@@ -80,10 +90,7 @@ sim_rain_get_handler(void *request, void *response, uint8_t *buffer, uint16_t pr
       increase();
     }
   }
-
-  REST.set_header_content_type(response, REST.type.TEXT_PLAIN);
-  snprintf((char*)buffer, REST_MAX_CHUNK_SIZE, "%f", current_rain);
-  REST.set_response_payload(response, (int *)buffer, strlen((char *)buffer));
+  return current_rain;
 }
 
 static int

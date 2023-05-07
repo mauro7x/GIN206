@@ -42,9 +42,9 @@
 #include "rest-engine.h"
 
 #include "extern_var.h"
+#include "res-sim-accel.h"
 
 static void sim_accel_get_handler(void *request, void *response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset);
-static float get_accel_sensor_value();
 static int in_decrease_range(int random);
 static int in_increase_range(int random);
 static int min_not_reached();
@@ -75,7 +75,7 @@ sim_accel_get_handler(void *request, void *response, uint8_t *buffer, uint16_t p
 }
 
 
-static float
+float
 get_accel_sensor_value()
 {
   // randomly change the value, with a preference of staying in the same state

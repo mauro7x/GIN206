@@ -1,0 +1,1 @@
+int get_temperature_sensor_value();

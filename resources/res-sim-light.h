@@ -1,0 +1,1 @@
+int get_light_sensor_value();

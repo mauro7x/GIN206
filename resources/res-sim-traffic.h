@@ -1,0 +1,1 @@
+float get_traffic_sensor_value();

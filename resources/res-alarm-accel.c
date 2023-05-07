@@ -46,15 +46,16 @@
 #include "rest-engine.h"
 
 #include "extern_var.h"
+#include "res-sim-accel.h"
 
 static void res_get_handler(void *request, void *response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset);
 static void res_periodic_handler(void);
+static int accel_alarm_threshold_reached();
 
 #define MAX_AGE               60
 #define ACCEL_ALARM_FREQ_SECS 5
 
-static const int PROB_TURN_ON = 10;
-static const int PROB_TURN_OFF = 20;
+static const float ACCEL_THRESHOLD = 0.1;
 
 PERIODIC_RESOURCE(res_alarm_accel,
          "title=ALARM-ACCELERATION",
@@ -69,7 +70,6 @@ static void
 res_get_handler(void *request, void *response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset)
 {
   printf("[res-alarm-accel] res_get_handler called (status=%d)\n", accel_alarm_status);
-
   REST.set_header_content_type(response, REST.type.TEXT_PLAIN);
   snprintf((char *)buffer, REST_MAX_CHUNK_SIZE, "%d", accel_alarm_status);
   REST.set_response_payload(response, (uint8_t *)buffer, strlen((char *)buffer));
@@ -86,17 +86,22 @@ static void
 res_periodic_handler()
 {
   printf("[res-alarm-accel] res_periodic_handler called (status=%d)\n", accel_alarm_status);
-
-  // randomly change the value, with a preference of staying in the same state
-  int prob_change_state = (accel_alarm_status == 1) ? PROB_TURN_OFF : PROB_TURN_ON;
-  int random = 0;
-  random = rand() % 100;
-  if (random < prob_change_state) {
-    // switch state
-    accel_alarm_status = (accel_alarm_status + 1) % 2;
-
+  // update alarm status
+  int new_alarm_status = accel_alarm_threshold_reached();
+  if (new_alarm_status != accel_alarm_status) {
+    accel_alarm_status = new_alarm_status;
     printf("[res-alarm-accel] status changed to %d, notifying subscribers\n", accel_alarm_status);
     /* Notify the registered observers which will trigger the res_get_handler to create the response. */
     REST.notify_subscribers(&res_alarm_accel);
   }
+}
+
+static int
+accel_alarm_threshold_reached()
+{
+  // get a fresh sensor value
+  // the extern variable current_accel could be used directly if it was updated more frequently, but in this
+  // architecture it is only updated upon external GET
+  float accel_sensor_value = get_accel_sensor_value();
+  return accel_sensor_value >= ACCEL_THRESHOLD;
 }

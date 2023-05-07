@@ -52,7 +52,7 @@
 int current_light = 256;
 int current_temperature = 3;
 float current_rain = 0.0f;
-float current_traffic = 1.0f;
+float current_traffic = 1.4f;
 float current_accel = 0.0f;
 
 // Alarms
