@@ -44,6 +44,7 @@
 #include "extern_var.h"
 
 static void sim_light_get_handler(void *request, void *response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset);
+int get_light_sensor_value();
 static int in_decrease_range(int random);
 static int in_increase_range(int random);
 static int min_not_reached();
@@ -65,6 +66,15 @@ RESOURCE(res_sim_light,
 static void
 sim_light_get_handler(void *request, void *response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset)
 {
+  int light_sensor_value = get_light_sensor_value();
+  REST.set_header_content_type(response, REST.type.TEXT_PLAIN);
+  snprintf((char*)buffer, REST_MAX_CHUNK_SIZE, "%d", light_sensor_value);
+  REST.set_response_payload(response, (int *)buffer, strlen((char *)buffer));
+}
+
+int
+get_light_sensor_value()
+{
   // randomly change the value, with a preference of staying in the same state
   int random = 0;
   random = rand() % 100;
@@ -79,10 +89,7 @@ sim_light_get_handler(void *request, void *response, uint8_t *buffer, uint16_t p
       increase();
     }
   }
-
-  REST.set_header_content_type(response, REST.type.TEXT_PLAIN);
-  snprintf((char*)buffer, REST_MAX_CHUNK_SIZE, "%d", current_light);
-  REST.set_response_payload(response, (int *)buffer, strlen((char *)buffer));
+  return current_light;
 }
 
 static int
