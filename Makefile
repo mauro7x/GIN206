@@ -1,4 +1,4 @@
-all: resource-server border-router
+all: resource-server
 
 TARGET ?= iotlab-m3
 CONTIKI = ../iot-lab/parts/contiki
