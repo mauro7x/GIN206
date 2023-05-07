@@ -86,8 +86,8 @@ res_get_handler(void *request, void *response, uint8_t *buffer, uint16_t preferr
 static void
 res_periodic_handler()
 {
-  // Ignore alarm if not moving
-  if (accel_alarm_status == 0) {
+  // Optimization: Ignore alarms if not moving
+  if (use_accel_alarm && (accel_alarm_status == 0)) {
     return;
   }
   
