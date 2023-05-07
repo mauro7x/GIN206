@@ -1,5 +1,6 @@
 all: resource-server
 
+TARGET ?= iotlab-m3
 CONTIKI = ../iot-lab/parts/contiki
 
 CFLAGS += -DPROJECT_CONF_H=\"project-conf.h\"
