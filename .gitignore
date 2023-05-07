@@ -6,4 +6,6 @@ obj_iotlab-m3/
 *.o
 *.csc
 
+.idea
+
 !old/**/*
