@@ -1,4 +1,4 @@
-all: resource-server
+all: resource-server border-router
 
 CONTIKI = ../iot-lab/parts/contiki
 
