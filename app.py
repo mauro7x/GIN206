@@ -127,37 +127,6 @@ def query_sensor(resource):
             break
 
 
-# @asyncio.coroutine
-# def observe_alarm(alarm):
-#     def log(msg): return logging.debug(f"[observer-alarm-{alarm}] {msg}")
-#     protocol = yield from aiocoap.Context.create_client_context()
-
-#     request = aiocoap.Message(code=aiocoap.GET)
-#     request.set_request_uri(get_uri(alarms[alarm]["path"]))
-
-#     # set observe bit from None to 0
-#     request.opt.observe = 0
-
-#     try:
-#         protocol_request = protocol.request(request)
-#         protocol_request.observation.register_callback(
-#             alarms[alarm]["callback"])
-#         response = yield from protocol_request.response
-#     except Exception as e:
-#         log("Request failed: %s" % str(e))
-#     else:
-#         log("Request ok: %r" % response.payload)
-#         alarms[alarm]["callback"](response)
-
-#     while True:
-#         try:
-#             yield from asyncio.sleep(30)
-#         except asyncio.CancelledError:
-#             log("Observation cancelled")
-#             protocol_request.observation.cancel()
-#             break
-
-
 @asyncio.coroutine
 def observe_alarms():
     protocol = yield from aiocoap.Context.create_client_context()
