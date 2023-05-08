@@ -8,7 +8,7 @@ logging.basicConfig(level=logging.INFO)
 
 # CONFIG ======================================================================
 
-RESOURCE_SERVER = '2001:660:5307:3144::a271'
+RESOURCE_SERVER = '2001:660:5307:3144::1662'
 DEVICE_TOKEN = "MONITOKEN"
 THINGSBOARD_HEADERS = {'Content-Type': 'application/json'}
 
@@ -33,8 +33,7 @@ def post_to_thingsboard(resource_key, value, device=DEVICE_TOKEN):
         logging.warn(f"Error while posting data to Thingsboard: {err}")
 
 
-async def get_sensor_data(resource):
-    protocol = await aiocoap.Context.create_client_context()
+async def get_sensor_data(protocol, resource):
     uri = get_uri(resources[resource]["path"])
     request = aiocoap.Message(code=aiocoap.GET, uri=uri)
     response = await protocol.request(request).response
@@ -50,18 +49,18 @@ moving = False
 resources = {
     "temperature": {
         "path": "my_res/sim_temperature",
-        "freq_if_moving": 3,
+        "freq_if_moving": 1,
         "freq_if_stopped": 10
     },
     "rain": {
         "path": "my_res/sim_rain",
-        "freq_if_moving": 5,
-        "freq_if_stopped": 20
+        "freq_if_moving": 1,
+        "freq_if_stopped": 10
     },
     "light": {
         "path": "my_res/sim_light",
         "freq_if_moving": 1,
-        "freq_if_stopped": 5
+        "freq_if_stopped": 10
     }
 }
 
@@ -107,12 +106,13 @@ alarms = {
 @asyncio.coroutine
 def query_sensor(resource):
     def log(msg): return logging.debug(f"[query-sensor-{resource}] {msg}")
+    protocol = yield from aiocoap.Context.create_client_context()
 
     while True:
         try:
             log(f"Querying...")
             try:
-                value = yield from get_sensor_data(resource)
+                value = yield from get_sensor_data(protocol, resource)
             except Exception as e:
                 logging.warning(f"Error while fetching sensor: {e}")
             else:
@@ -127,34 +127,67 @@ def query_sensor(resource):
             break
 
 
+# @asyncio.coroutine
+# def observe_alarm(alarm):
+#     def log(msg): return logging.debug(f"[observer-alarm-{alarm}] {msg}")
+#     protocol = yield from aiocoap.Context.create_client_context()
+
+#     request = aiocoap.Message(code=aiocoap.GET)
+#     request.set_request_uri(get_uri(alarms[alarm]["path"]))
+
+#     # set observe bit from None to 0
+#     request.opt.observe = 0
+
+#     try:
+#         protocol_request = protocol.request(request)
+#         protocol_request.observation.register_callback(
+#             alarms[alarm]["callback"])
+#         response = yield from protocol_request.response
+#     except Exception as e:
+#         log("Request failed: %s" % str(e))
+#     else:
+#         log("Request ok: %r" % response.payload)
+#         alarms[alarm]["callback"](response)
+
+#     while True:
+#         try:
+#             yield from asyncio.sleep(30)
+#         except asyncio.CancelledError:
+#             log("Observation cancelled")
+#             protocol_request.observation.cancel()
+#             break
+
+
 @asyncio.coroutine
-def observe_alarm(alarm):
-    def log(msg): return logging.debug(f"[observer-alarm-{alarm}] {msg}")
-
+def observe_alarms():
     protocol = yield from aiocoap.Context.create_client_context()
-    request = aiocoap.Message(code=aiocoap.GET)
-    request.set_request_uri(get_uri(alarms[alarm]["path"]))
 
-    # set observe bit from None to 0
-    request.opt.observe = 0
+    # Accel
+    alarm_keys = ["accel", "lights", "traffic", "freezing"]
+    reqs = []
 
-    try:
-        protocol_request = protocol.request(request)
-        protocol_request.observation.register_callback(
-            alarms[alarm]["callback"])
-        response = yield from protocol_request.response
-    except Exception as e:
-        log("Request failed: %s" % str(e))
-    else:
-        log("Request ok: %r" % response.payload)
-        alarms[alarm]["callback"](response)
+    for alarm_key in alarm_keys:
+        req = aiocoap.Message(code=aiocoap.GET)
+        req.set_request_uri(get_uri(alarms[alarm_key]["path"]))
+        req.opt.observe = 0
+
+        try:
+            protocol_request = protocol.request(req)
+            protocol_request.observation.register_callback(
+                alarms[alarm_key]["callback"])
+            reqs.append(protocol_request)
+            response = yield from protocol_request.response
+        except Exception as e:
+            print("Request failed: %s" % str(e))
+        else:
+            alarms[alarm_key]["callback"](response)
 
     while True:
         try:
             yield from asyncio.sleep(30)
         except asyncio.CancelledError:
-            log("Observation cancelled")
-            protocol_request.observation.cancel()
+            for protocol_req in reqs:
+                protocol_req.observation.cancel()
             break
 
 
@@ -168,10 +201,7 @@ if __name__ == "__main__":
         query_sensor("light"),
         query_sensor("rain"),
         query_sensor("temperature"),
-        observe_alarm("accel"),
-        observe_alarm("lights"),
-        observe_alarm("freezing"),
-        observe_alarm("traffic"),
+        observe_alarms()
     ]
 
     # Spawn tasks in the event loop
